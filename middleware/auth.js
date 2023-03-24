@@ -2,12 +2,13 @@ const jwt = require('jsonwebtoken')
 const User = require("../DB/user")
 const ven = require("../DB/vendor")
 const dotenv = require('dotenv');
+const env =- require('../env');
 dotenv.config();
 
 const auth_user = async (req, res, next) => {
     try {
         const token = req.header('Authorization').replace('Bearer', '')
-        const decoded = jwt.verify(token, process.env.JW_KEY_VALUE)
+        const decoded = jwt.verify(token, env.jwt.secret)
         const user = await User.findOne({ _id: decoded._id, 'tokens.token': token })
 
         if (!user) {
@@ -25,7 +26,7 @@ const auth_user = async (req, res, next) => {
 const auth_ven = async (req, res, next) => {
     try {
         const token = req.header('Authorization').replace('Bearer', '')
-        const decoded = jwt.verify(token, process.env.JW_KEY_VALUE)
+        const decoded = jwt.verify(token, env.jwt.secret)
         const vend = await ven.findOne({ _id: decoded._id, 'tokens.token': token })
 
         if (!vend) {
@@ -39,3 +40,6 @@ const auth_ven = async (req, res, next) => {
         res.status(401).send({ error: 'Please authenticate.' })
     }
 }
+
+module.exports = auth_user
+module.exports = auth_ven

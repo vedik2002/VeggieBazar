@@ -3,6 +3,7 @@ const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs')
+const env = require('../env')
 dotenv.config();
 
 
@@ -54,22 +55,34 @@ const account = new mongoose.Schema({
             required: true,
             default: null
         }
-    }
+    },
+    rating: {
+        type: Number,
+        required: true,
+        default: 5
+    },
+    bookmarks: [{ // Need to work on this
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'vendor'
+    }]
 })
 
 // JWT AUTHENTICATION ////
 
-account.method.generateToken = async function () {
+account.methods.generateToken = async function () {
     const user = this
-    const token = jwt.sign({ _id: user._id.toString() }, process.env.JW_KEY_VALUE)
-    user.token = user.token.concat({ token })
+
+    const token_temp = jwt.sign({ _id: user._id.toString() }, '301423284405')
+
+    user.tokens.push({ token: token_temp })
     await user.save()
-    return token
+    return token_temp
 }
 
 /// Checking the database ///// 
 
 account.statics.findCredentials = async (name, password) => {
+
     const user = await User.findOne({ name })
 
     if (!user) {
