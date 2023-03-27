@@ -3,7 +3,7 @@ const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs')
-dotenv.config();
+require('dotenv').config()
 
 
 const vendor = new mongoose.Schema({
@@ -59,22 +59,30 @@ const vendor = new mongoose.Schema({
             required: true,
             default: null
         }
+    },
+    active:{
+        type: Boolean,
+        default: true,
     }
 })
 
 // JWT AUTHENTICATION ////
 
-vendor.method.generateToken = async function () {
+account.methods.generateToken = async function () {
     const user = this
-    const token = jwt.sign({ _id: user._id.toString() }, process.env.JW_KEY_VALUE)
-    user.token = user.token.concat({ token })
+
+    const token_temp = jwt.sign({ _id: user._id.toString() }, process.env.JW_KEY_VALUE)
+
+    user.tokens = user.tokens.concat({token: token});
+
     await user.save()
+  
     return token
 }
 
 /// Checking the database ///// 
 
-vendor.statics.findCredentials = async (name, password) => {
+account.statics.findCredentials = async (name, password) => {
     const user = await User.findOne({ name })
 
     if (!user) {
@@ -89,10 +97,9 @@ vendor.statics.findCredentials = async (name, password) => {
 
     return user
 }
-
 // Hashing the password
 
-vendor.pre('save', async function (next) {
+account.pre('save', async function (next) {
     const user = this
 
     if (user.isModified('password')) {
@@ -101,6 +108,8 @@ vendor.pre('save', async function (next) {
 
     next()
 })
+
+
 
 const ven = mongoose.model('ven', vendor)
 

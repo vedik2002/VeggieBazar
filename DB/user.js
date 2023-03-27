@@ -3,8 +3,7 @@ const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs')
-const env = require('../env')
-dotenv.config();
+require('dotenv').config()
 
 
 const account = new mongoose.Schema({
@@ -72,17 +71,18 @@ const account = new mongoose.Schema({
 account.methods.generateToken = async function () {
     const user = this
 
-    const token_temp = jwt.sign({ _id: user._id.toString() }, '301423284405')
+    const token = jwt.sign({ _id: user._id.toString() }, process.env.JW_KEY_VALUE)
 
-    user.tokens.push({ token: token_temp })
+    user.tokens = user.tokens.concat({token: token});
+
     await user.save()
-    return token_temp
+  
+    return token
 }
 
 /// Checking the database ///// 
 
 account.statics.findCredentials = async (name, password) => {
-
     const user = await User.findOne({ name })
 
     if (!user) {
@@ -97,7 +97,6 @@ account.statics.findCredentials = async (name, password) => {
 
     return user
 }
-
 // Hashing the password
 
 account.pre('save', async function (next) {
@@ -110,7 +109,7 @@ account.pre('save', async function (next) {
     next()
 })
 
-
+ 
 const User = mongoose.model('User', account)
 
 module.exports = User
