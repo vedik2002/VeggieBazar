@@ -1,14 +1,15 @@
 const express = require('express')
 const userRoute = require('./routes/user_route')
-require('./DB/mongo')
 const app = express()
-const dotenv = require('dotenv')
-dotenv.config();
+const cookieParser = require('cookie-parser');
+
+require('./DB/mongo')
+require('dotenv').config();
 
 const port = 3000;
 
 app.use(express.json())
-
+app.use(cookieParser());
 app.use(userRoute)
 
 app.listen(port,()=>{
