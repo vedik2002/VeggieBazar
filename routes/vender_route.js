@@ -1,8 +1,6 @@
 const express = require('express')
-const User = require('../DB/user')
-const ven = require('../DB/vendor')
+const User = require('../DB/vendor')
 const jwt = require('jsonwebtoken')
-const dist = require('../distance_calculator/distance')
 //const auth = require('../middleware/auth')
 require('dotenv').config()
 
@@ -37,42 +35,17 @@ router.post('/user/login', async (req, res) => {
     }
 })
 
-/// placing order ///////
 
-
-router.post('/user/order',auth,async(req,res)=>
-{
-    const token = req.cookies.token;
-    const order  = req.body.order;
-    if (!token) {
-      return res.status(401).send('Error');
-    }
-
-    const decoded = jwt.verify(token, process.env.JW_KEY_VALUE);
-    const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
-
-    for(let i=0;i<order.length();i++)
-    {
-        user.orders = user.orders.concat({ order: order[i], status: false });
-    }
-
-    await user.save()
-
-
-    
-
-})
-
-
-
-
-
+//make a route to add things in inventory
 
 ////// Logout User ////////
 
 router.post('/user/logout', async (req, res) => {
     try {
+  
+      console.log(req.cookies)
       const token = req.cookies.token;
+      console.log(token)
       if (!token) {
         return res.status(401).send('Error');
       }

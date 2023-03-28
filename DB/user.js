@@ -60,6 +60,17 @@ const account = new mongoose.Schema({
         required: true,
         default: 5
     },
+    orders:[{
+        order:{
+            type:String,
+            default:null,
+        },
+        status:{
+            type:Boolean,
+            default:null,
+        }
+
+    }],
     bookmarks: [{ // Need to work on this
         type: mongoose.Schema.Types.ObjectId,
         ref: 'vendor'
@@ -108,6 +119,18 @@ account.pre('save', async function (next) {
 
     next()
 })
+
+account.methods.toJSON = function()
+{
+    const user = this
+    const userObj = user.toObject()
+    delete userObj.password
+    delete userObj.tokens
+    delete userObj.googleId
+    delete userObj.googleAccessToken
+    delete userObj.bookmarks
+    return userObj
+}
 
  
 const User = mongoose.model('User', account)
