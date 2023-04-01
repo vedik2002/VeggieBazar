@@ -60,22 +60,26 @@ const account = new mongoose.Schema({
         required: true,
         default: 5
     },
-    orders:[{
-        order:{
+    orders:{
+        order:[{
             type:String,
-            default:null,
-        },
-        status:{
-            type:Boolean,
-            default:null,
-        }
-
-    }],
+            required: true,
+            default: null
+        }],
+        quantity:[{
+            type:Number,
+            required: true,
+            default: null
+        }]
+      
+    },
     bookmarks: [{ // Need to work on this
         type: mongoose.Schema.Types.ObjectId,
         ref: 'vendor'
     }]
 })
+
+account.index({location:'2dsphere'});
 
 // JWT AUTHENTICATION ////
 

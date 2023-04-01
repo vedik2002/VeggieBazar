@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
-const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs')
 require('dotenv').config()
 
@@ -42,11 +41,6 @@ const vendor = new mongoose.Schema({
         type: String,
         default: null
     },
-    type:{
-      type: String,
-      default: null,
-      required: true  
-    },
     location: {
         type: {
             type: String,
@@ -61,18 +55,20 @@ const vendor = new mongoose.Schema({
         }
     },
 
-    inventory:[{
-        store:{
+    inventory:{
+        item:[{
             type:String,
-            required:true,
             default:null,
-        },
-        price:{
+        }],
+        quantity:[{
             type:Number,
-            required:true,
             default:null
-        }
-    }],
+        }],
+        price:[{
+            type:Number,
+            default:null
+        }]
+    },
     
     active:{
         type: Boolean,
@@ -80,12 +76,14 @@ const vendor = new mongoose.Schema({
     }
 })
 
+vendor.index({location:'2dsphere'});
+
 // JWT AUTHENTICATION ////
 
-account.methods.generateToken = async function () {
+vendor.methods.generateToken = async function () {
     const user = this
 
-    const token_temp = jwt.sign({ _id: user._id.toString() }, process.env.JW_KEY_VALUE)
+    const token = jwt.sign({ _id: user._id.toString() }, process.env.JW_KEY_VALUE)
 
     user.tokens = user.tokens.concat({token: token});
 
@@ -96,7 +94,7 @@ account.methods.generateToken = async function () {
 
 /// Checking the database ///// 
 
-account.statics.findCredentials = async (name, password) => {
+vendor.statics.findCredentials = async (name, password) => {
     const user = await User.findOne({ name })
 
     if (!user) {
@@ -112,8 +110,7 @@ account.statics.findCredentials = async (name, password) => {
     return user
 }
 // Hashing the password
-
-account.pre('save', async function (next) {
+vendor.pre('save', async function (next) {
     const user = this
 
     if (user.isModified('password')) {
@@ -125,6 +122,6 @@ account.pre('save', async function (next) {
 
 
 
-const ven = mongoose.model('ven', vendor)
+const Ven = mongoose.model('Ven', vendor)
 
-module.exports = ven
+module.exports = Ven

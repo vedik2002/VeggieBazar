@@ -40,10 +40,12 @@ router.post('/user/login', async (req, res) => {
 /// placing order ///////
 
 
-router.post('/user/order',auth,async(req,res)=>
+router.post('/user/order',async(req,res)=>
 {
+
     const token = req.cookies.token;
-    const order  = req.body.order;
+    //const order  = req.body;
+    
     if (!token) {
       return res.status(401).send('Error');
     }
@@ -51,16 +53,24 @@ router.post('/user/order',auth,async(req,res)=>
     const decoded = jwt.verify(token, process.env.JW_KEY_VALUE);
     const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
 
-    for(let i=0;i<order.length();i++)
-    {
-        user.orders = user.orders.concat({ order: order[i], status: false });
-    }
-
-    await user.save()
-
-
+    /*const order_name = order.name;
+    const quant = order.quantity;
     
+    console.log( user.orders.order )
+    console.log(user.orders.quantity)
 
+    user.orders.order = [...user.orders.order, ...order_name];
+    user.orders.quantity = [...user.orders.quantity, ...quant];
+
+    await user.save()*/
+
+    const ven = dist(user.location.coordinates,user.orders.order,user.orders.quantity)
+
+    console.log(ven)
+
+    res.status(201).send(ven)
+
+    // add a commond to delete the order once the request is complete in that way no need to maontain status
 })
 
 
