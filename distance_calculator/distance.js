@@ -1,78 +1,68 @@
 const ven = require('../DB/vendor')
 
-async function getNearbyVendors(userLat, userLon, orderItem) {
-    let maxDistance = 1000; 
-    let nearbyVendors = [];
-  
-    while (nearbyVendors.length === 0 && maxDistance <= 5000) {
-      nearbyVendors = await ven.aggregate([
-        {
-          $geoNear: {
-            near: {
-              type: 'Point',
-              coordinates: [userLon, userLat],
-            },
-            distanceField: 'distance',
-            maxDistance: maxDistance,
-            spherical: true,
-          },
-        },
-        {
-          $match: {
-            active: true,
-            inventory: {
-              $elemMatch: {
-                store: orderItem.store,
-              },
-            },
-          },
-        },
-        {
-          $addFields: {
-            matchingItems: {
-              $filter: {
-                input: '$inventory',
-                as: 'item',
-                cond: { $eq: ['$$item.store', orderItem.store] },
-              },
-            },
-          },
-        },
-        {
-          $addFields: {
-            matchingPrice: {
-              $arrayElemAt: [
-                {
-                  $filter: {
-                    input: '$matchingItems',
-                    as: 'item',
-                    cond: { $lte: ['$$item.price', orderItem.price] },
-                  },
-                },
-                0,
-              ],
-            },
-          },
-        },
-        {
-          $addFields: {
-            matchedItemPrice: { $ifNull: ['$matchingPrice.price', null] },
-          },
-        },
-        {
-          $sort: {
-            rating: -1, 
-            matchedItemPrice: 1, 
-          },
-        },
-      ]);
-  
-      maxDistance += 1000; 
-    }
-  
-    return nearbyVendors;
-  }
-  
-  
+const findVendors = async (location, orderItem, orderquan) => {
 
-module.exports =  getNearbyVendors
+
+  try {
+    const itemNames = orderItem;
+    const itemQuantities = orderquan;
+
+    console.log(itemNames)
+    console.log(itemQuantities)
+    console.log(location)
+
+    const vendors = await ven.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: location
+          },
+          distanceField: "distance",
+          maxDistance: 1000,
+          spherical: true
+        }
+      },
+      {
+        $lookup: {
+          from: "inventory",
+          localField: "_id",
+          foreignField: "vendor",
+          as: "inventory"
+        }
+      },
+      {
+        $unwind: "$inventory"
+      },
+      {
+        $match: {
+          "inventory.item": { $in: itemNames },
+          "inventory.quantity": { $gte: itemQuantities },
+          active: true
+        }
+      },
+      {
+        $sort: {
+          rating: -1,
+          distance: 1,
+          "inventory.price": 1
+        }
+      }
+    ]);
+
+
+
+    const result = vendors.map((vendor) => {
+      const { name, location: { coordinates } } = vendor;
+      return { name, lat: coordinates[1], long: coordinates[0] };
+    });
+
+    return result;
+
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+module.exports = findVendors
