@@ -1,8 +1,11 @@
 Problem Statement: -
 
 The traditional market for fruits and vegetables has been a vital part of local communities for providing fresh and locally sourced produce. However, the market is facing challenges in keeping up with changing consumer demands, leading to a revenue gap between local vendors and larger supermarket owners who have embraced technological advancements. Moreover, local vendors struggle with unstable customer base and income, making it hard for them to sustain their businesses. These challenges, coupled with changing consumer preferences, supply chain disruptions, and increased competition, pose a threat to the future of the traditional market. It is therefore imperative to invest in the growth and development of local vendors, including training them to leverage technology to reach more customers online. Recognizing the value of local vendors and supporting them will help ensure that the traditional market for fruits and vegetables remains a thriving and indispensable part of our community.
-Understanding customer pain points through survey
+
+Understanding customer pain points through survey:-
+
 To gain better perspective of the problem statement and validate whether a gap in the local grocery market exists, we conducted a short survey of our own. The aim of the survey was to understand the grocery shopping preferences of different age groups in tier 2 and tier 3 cities. Most respondents were aged between 20-40 and 50-60 years, comprising 40% and 46% of the sample, respectively. An overwhelming 77% of respondents preferred offline groceries over online options. We found that the reason for this preference was largely due to a lack of trust in the online grocery system, as well as concerns about quality and freshness of the produce. Additionally, half of the respondents were not aware of grocery prices in their area, indicating a lack of pricing transparency in the traditional grocery market. The survey also revealed that 40% of respondents expressed dissatisfaction with the quality of groceries they received. These insights highlight the need to address pricing transparency and quality control in the traditional grocery market, to support local vendors and ensure that consumers continue to have access to fresh, healthy, and locally sourced produce.
+
 In addition to these challenges, local vendors also face difficulties in maintaining a steady supply of high-quality produce, as well as in managing inventory and distribution. These factors contribute to a lack of consistency in the products they offer and can result in fluctuating customer demand and revenue. The survey results suggest that local vendors are facing a challenge in attracting customers to their physical stores. With the overwhelming preference for offline grocery shopping, it is essential for vendors to find ways to increase foot traffic and encourage customers to visit their stores. This could be possible by making the shopping experience more engaging and convenient. Additionally, vendors could consider leveraging technology to enhance the in-store experience, such as by offering online ordering for in-store pickup or using digital signage to promote products and specials. Ultimately, by addressing customer pain points and improving the shopping experience, local vendors can attract more customers and increase their revenue, helping to ensure the continued success of the traditional market for fruits and vegetables.
 
 Solution Proposed: -
@@ -13,11 +16,11 @@ Our team leveraged cutting-edge technologies and drew inspiration from industry 
 
 Technology Used:-
 
-* To handle multiple request to the server we are using Node js to hanldle server side application
+* To handle multiple request to the server we are using Node js to handle server side application
 * To store the database we are NoSql database , MongoDB.
 * We are liveraging several google apis to track users location and displaying it on a map interface also to enable navigation for the vendor.
 * For machine learning model we are using logestic regression as our base model and using python libraries mainly pandas,numpy and scikit learn.
-* We will be using AMW instances for delpoying the application.
+* We will be using AWS instances for delpoying the application.
 
 
 Conclusion:-
