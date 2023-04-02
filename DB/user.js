@@ -79,7 +79,7 @@ const account = new mongoose.Schema({
     }]
 })
 
-account.index({location:'2dsphere'});
+
 
 // JWT AUTHENTICATION ////
 

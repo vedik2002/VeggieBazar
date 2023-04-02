@@ -76,7 +76,6 @@ const vendor = new mongoose.Schema({
     }
 })
 
-vendor.index({location:'2dsphere'});
 
 // JWT AUTHENTICATION ////
 
