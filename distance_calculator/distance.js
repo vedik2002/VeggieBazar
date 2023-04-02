@@ -1,68 +1,13 @@
-const ven = require('../DB/vendor')
-
-const findVendors = async (location, orderItem, orderquan) => {
-
-
-  try {
-    const itemNames = orderItem;
-    const itemQuantities = orderquan;
-
-    console.log(itemNames)
-    console.log(itemQuantities)
-    console.log(location)
-
-    const vendors = await ven.aggregate([
-      {
-        $geoNear: {
-          near: {
-            type: "Point",
-            coordinates: location
-          },
-          distanceField: "distance",
-          maxDistance: 1000,
-          spherical: true
-        }
-      },
-      {
-        $lookup: {
-          from: "inventory",
-          localField: "_id",
-          foreignField: "vendor",
-          as: "inventory"
-        }
-      },
-      {
-        $unwind: "$inventory"
-      },
-      {
-        $match: {
-          "inventory.item": { $in: itemNames },
-          "inventory.quantity": { $gte: itemQuantities },
-          active: true
-        }
-      },
-      {
-        $sort: {
-          rating: -1,
-          distance: 1,
-          "inventory.price": 1
-        }
-      }
-    ]);
-
-
-
-    const result = vendors.map((vendor) => {
-      const { name, location: { coordinates } } = vendor;
-      return { name, lat: coordinates[1], long: coordinates[0] };
-    });
-
-    return result;
-
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-};
-
-module.exports = findVendors
+function calculateDistance(lat1, long1, lat2, long2) {
+  const R = 6371; // radius of Earth in kilometers
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLong = (long2 - long1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLong / 2) * Math.sin(dLong / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c;
+  return distance;
+}
+module.exports = calculateDistance
