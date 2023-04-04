@@ -3,17 +3,23 @@ const User = require('../DB/user')
 const ven = require('../DB/vendor')
 const jwt = require('jsonwebtoken')
 const  calculateDistance = require('../distance_calculator/distance')
+const bodyParser = require('body-parser')
 //const auth = require('../middleware/auth')
 require('dotenv').config()
 
 const router = new express.Router()
 
+router.use(bodyParser.json())
+
 ////// Create user .//////////////
 
+router.get('/',async (req,res) => {
+  res.sendFile('index.html', { root: path.join(__dirname, '/public') })
+})
 
 router.post('/user', async (req, res) => {
-
-  const user = new User(req.body)
+  const data = req.body;
+  const user = new User(data)
   try {
 
     const token = await user.generateToken()

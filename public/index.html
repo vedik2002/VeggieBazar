@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>SignUp and Login</title>
+	<link rel="stylesheet" type="text/css" href="./styles/style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+
+	<div class="container" id="container">
+		<div class="form-container sign-up-container">
+
+			<form action="/user" method="post" onsubmit="signUp()">
+				<h1>Create Account</h1>
+				<div class="social-container">
+					<a href="#" class="social"><i class="fa fa-google"></i></a>
+				</div>
+				<span>or use your email for registration</span>
+				<input type="text" name="name" id="name" placeholder="Name">
+				<input type="email" name="email" id="email" placeholder="Email">
+				<input type="password" name="password" id="password" placeholder="Password">
+
+				<button type="button" onclick="getLocation()">Get Location</button>
+
+				<!-- Add a hidden input field to capture the latitude and longitude data -->
+				<input type="hidden" name="latitude" id="latitude">
+				<input type="hidden" name="longitude" id="longitude">
+
+
+				<button type="submit">SignUp</button>
+			</form>
+		</div>
+		<div class="form-container sign-in-container">
+			<form id="login" action="/user/login" method="post">
+				<h1>Sign In</h1>
+				<div class="social-container">
+					<a href="#" class="social"><i class="fa fa-google"></i></a>
+				</div>
+				<input type="email" name="email" placeholder="Email">
+				<input type="password" name="password" placeholder="Password">
+				<a href="#">Forgot Your Password</a>
+
+				<button type="submit">Sign In</button>
+			</form>
+		</div>
+		<div class="overlay-container">
+			<div class="overlay">
+				<div class="overlay-panel overlay-left">
+					<h1>Welcome Back!</h1>
+					<p>To keep connected with us please login with your personal info</p>
+					<button class="ghost" id="signIn">Sign In</button>
+				</div>
+				<div class="overlay-panel overlay-right">
+					<h1>VeggieBazaar</h1>
+					<p>Enter your details and start journey with us</p>
+					<button class="ghost" id="signUp">Sign Up</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		function signUp() {
+			const name = document.getElementById('name').value;
+			const password = document.getElementById('password').value;
+			const email = document.getElementById('email').value;
+			const latitude = document.getElementById('latitude').value;
+			const longitude = document.getElementById('longitude').value;
+
+			const data = {
+				name: name,
+				email: email,
+				password: password,
+				location: {
+					type: 'Point',
+					coordinates: [parseFloat(longitude), parseFloat(latitude)]
+				}
+			};
+
+
+			fetch('/user', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			})
+				.then(response => {
+					if (response.ok) {
+						window.location.href = '/user/dashboard';
+						console.log(window.location.href)
+					} else {
+						alert('Error: ' + response.statusText);
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					alert('An error occurred. Please try again later.');
+				});
+		}
+
+
+		function getLocation() {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(sendLocation);
+			} else {
+				alert("Geolocation is not supported by this browser.");
+			}
+		}
+
+		function sendLocation(position) {
+			const latitude = position.coords.latitude;
+			const longitude = position.coords.longitude;
+			document.getElementById("latitude").value = latitude;
+			document.getElementById("longitude").value = longitude;
+		}
+
+		const signUpButton = document.getElementById('signUp');
+		const signInButton = document.getElementById('signIn');
+		const container = document.getElementById('container');
+
+		signUpButton.addEventListener('click', () => {
+			container.classList.add("right-panel-active");
+		});
+		signInButton.addEventListener('click', () => {
+			container.classList.remove("right-panel-active");
+		});
+	</script>
+
+
+</body>
+
+</html>
